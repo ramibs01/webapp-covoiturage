@@ -1,0 +1,151 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tableau d'Administration - Covoiturage Tunisie{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="border-b border-slate-200 pb-6 mb-8">
+        <h1 class="text-3xl font-extrabold text-slate-900 leading-tight">Tableau d'Administration</h1>
+        <p class="text-sm text-slate-500 mt-1">Supervision de la plateforme, gestion des comptes utilisateurs et modération.</p>
+    </div>
+
+    <!-- Stats summary matching Statistiques model in class diagram -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+                <span class="block text-2xl font-extrabold text-slate-900">{{ stats.nombreUtilisateurs }}</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Utilisateurs</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-road"></i>
+            </div>
+            <div>
+                <span class="block text-2xl font-extrabold text-slate-900">{{ stats.nombreTrajets }}</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Trajets</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div>
+                <span class="block text-2xl font-extrabold text-slate-900">{{ stats.nombreReservations }}</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Réservations</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+                <span class="block text-2xl font-extrabold text-slate-900">{{ stats.nombreCommentaires }}</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Avis Publiés</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two-column main panels -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Users panel (2/3 width) -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800"><i class="fa-solid fa-users-gear mr-2 text-slate-400"></i>Gestion des utilisateurs</h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+                        <thead class="bg-slate-50/50">
+                            <tr>
+                                <th class="px-6 py-3 font-semibold text-slate-500 uppercase tracking-wider">Utilisateur</th>
+                                <th class="px-6 py-3 font-semibold text-slate-500 uppercase tracking-wider">Téléphone</th>
+                                <th class="px-6 py-3 font-semibold text-slate-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            {% for u in users %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-3">
+                                            {% if u.photoProfil %}
+                                                <img class="h-8 w-8 rounded-full object-cover" src="{{ u.photoProfil.url }}" alt="{{ u.username }}">
+                                            {% else %}
+                                                <div class="h-8 w-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                                                    {{ u.first_name|slice:":1" }}
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <div class="font-bold text-slate-800">{{ u.first_name }} {{ u.last_name }}</div>
+                                                <div class="text-[10px] text-slate-400">{{ u.username }} ({{ u.email }})</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-600">{{ u.telephone }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold 
+                                            {% if u.statut == StatutCompte.ACTIF %}bg-emerald-50 text-emerald-700 border border-emerald-100
+                                            {% else %}bg-rose-50 text-rose-700 border border-rose-100{% endif %}">
+                                            {{ u.get_statut_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        {% if u != user %}
+                                            <a href="{% url 'admin_toggle_user' u.pk %}" class="font-bold text-xs {% if u.statut == StatutCompte.ACTIF %}text-rose-600 hover:text-rose-700{% else %}text-emerald-600 hover:text-emerald-700{% endif %}">
+                                                {% if u.statut == StatutCompte.ACTIF %}Désactiver{% else %}Activer{% endif %}
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Rides Overview Panel (1/3 width) -->
+        <div class="lg:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-fit">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800"><i class="fa-solid fa-route mr-2 text-slate-400"></i>Derniers trajets</h3>
+            </div>
+            
+            <div class="divide-y divide-slate-100 max-h-[60vh] overflow-y-auto">
+                {% for r in rides %}
+                    <div class="p-4 hover:bg-slate-50 transition-colors text-xs space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-slate-800">{{ r.villeDepart }} → {{ r.villeArrivee }}</span>
+                            <span class="text-slate-400 font-medium">{{ r.prixParPlace }} TND</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400">Date: {{ r.dateTrajet }} à {{ r.heureDepart }}</div>
+                        <div class="text-[10px] text-slate-500">Conducteur: {{ r.driver.first_name }} {{ r.driver.last_name }}</div>
+                        <div class="flex justify-between items-center pt-1.5">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase
+                                {% if r.statut == 'OUVERT' %}bg-emerald-50 text-emerald-700
+                                {% elif r.statut == 'COMPLET' %}bg-blue-50 text-blue-700
+                                {% else %}bg-slate-100 text-slate-600{% endif %}">
+                                {{ r.statut }}
+                            </span>
+                            <a href="{% url 'ride_detail' r.pk %}" class="text-primary-600 hover:underline font-semibold">Voir details</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="p-8 text-center text-slate-400">
+                        Aucun trajet enregistré.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

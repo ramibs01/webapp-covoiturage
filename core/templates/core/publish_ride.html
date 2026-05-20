@@ -1,0 +1,127 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if editing %}Modifier le trajet{% else %}Publier un trajet{% endif %} - Covoiturage Tunisie{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <h1 class="text-2xl font-extrabold text-slate-900 mb-2">
+            {% if editing %}Modifier mon trajet{% else %}Publier un nouveau trajet{% endif %}
+        </h1>
+        <p class="text-xs text-slate-500 mb-8 border-b border-slate-100 pb-4">
+            Remplissez les détails du trajet et vos préférences de voyage pour les passagers.
+        </p>
+
+        <form method="POST" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Section 1: Route information -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">1. Détails de l'itinéraire</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ville de Départ</label>
+                        <input type="text" name="villeDepart" value="{{ trajet_form.villeDepart.value|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" placeholder="Ex: Tunis" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ville d'Arrivée</label>
+                        <input type="text" name="villeArrivee" value="{{ trajet_form.villeArrivee.value|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" placeholder="Ex: Sfax" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date du voyage</label>
+                        <input type="date" name="dateTrajet" value="{{ trajet_form.dateTrajet.value|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Heure de départ</label>
+                        <input type="time" name="heureDepart" value="{{ trajet_form.heureDepart.value|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Pricing and seats -->
+            <div class="space-y-4 pt-6 border-t border-slate-100">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">2. Capacité et Tarification</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Prix par place (TND)</label>
+                        <input type="number" name="prixParPlace" step="0.5" value="{{ trajet_form.prixParPlace.value|default_if_none:'10' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre de places disponibles</label>
+                        <input type="number" name="placesDisponibles" min="1" max="8" value="{{ trajet_form.placesDisponibles.value|default_if_none:'4' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Véhicule Utilisé</label>
+                        <select name="vehicle" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                            {% for choice in trajet_form.fields.vehicle.queryset %}
+                                <option value="{{ choice.id }}" {% if trajet_form.vehicle.value == choice.id %}selected{% endif %}>{{ choice }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Travel preferences -->
+            <div class="space-y-4 pt-6 border-t border-slate-100">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">3. Préférences de Voyage</h3>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div class="flex items-center">
+                        <input id="femmesUniquement" name="femmesUniquement" type="checkbox" {% if pref_form.femmesUniquement.value %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="femmesUniquement" class="ml-3 text-xs font-semibold text-slate-700">Femmes uniquement</label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input id="nonFumeur" name="nonFumeur" type="checkbox" {% if pref_form.nonFumeur.value %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="nonFumeur" class="ml-3 text-xs font-semibold text-slate-700">Non-fumeur</label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="accepteAnimaux" name="accepteAnimaux" type="checkbox" {% if pref_form.accepteAnimaux.value %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="accepteAnimaux" class="ml-3 text-xs font-semibold text-slate-700">Accepte les animaux</label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="accepteBagagesVolumineux" name="accepteBagagesVolumineux" type="checkbox" {% if pref_form.accepteBagagesVolumineux.value %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="accepteBagagesVolumineux" class="ml-3 text-xs font-semibold text-slate-700">Grands bagages</label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="musiqueAutorisee" name="musiqueAutorisee" type="checkbox" {% if pref_form.musiqueAutorisee.value %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="musiqueAutorisee" class="ml-3 text-xs font-semibold text-slate-700">Musique autorisée</label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="pauseCafe" name="pauseCafe" type="checkbox" {% if pref_form.pauseCafe.value %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="pauseCafe" class="ml-3 text-xs font-semibold text-slate-700">Pause café</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Description -->
+            <div class="space-y-4 pt-6 border-t border-slate-100">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">4. Description additionnelle</h3>
+                <div>
+                    <textarea name="description" rows="3" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" placeholder="Ex: Point de rendez-vous précis, pauses prévues, etc.">{{ trajet_form.description.value|default_if_none:'' }}</textarea>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-slate-100 flex gap-4">
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary-600/20 transition-all text-sm">
+                    {% if editing %}Modifier le trajet{% else %}Publier le trajet{% endif %}
+                </button>
+                <a href="{% url 'dashboard' %}" class="bg-white hover:bg-slate-50 text-slate-750 font-bold py-3 px-8 rounded-xl border border-slate-200 transition-colors text-sm text-center">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

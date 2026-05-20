@@ -1,0 +1,130 @@
+CAHIER DES CHARGES EXÉCUTIF
+Plateforme de Covoiturage en Tunisie (Type BlaBlaCar)
+
+Nom du projet : Covoiturage Tunisie
+Auteurs : Mohamed Yessin Bahri
+	 Rami Ben Slima
+	 Mohamed Aziz Zouari
+	 Ahmad Borcheni
+	 Youssef Chaari
+
+1. Objectifs du Projet
+
+- Faciliter les déplacements entre les villes tunisiennes.
+- Réduire les coûts de transport.
+- Mettre en relation conducteurs et passagers.
+- Offrir une solution simple, rapide et sécurisée.
+
+2. Utilisateurs Cibles
+
+Conducteur
+- Publier un trajet :
+  - Point de départ.
+  - Destination.
+  - Date du trajet.
+  - Heure de départ.
+  - Nombre de places disponibles.
+  - Prix par place.
+  - Description complémentaire.
+  - Type de voiture.
+  - Marque et modèle du véhicule.
+  - Préférences :
+    - Femmes uniquement.
+    - Non-fumeur.
+    - Accepte les animaux.
+    - Accepte beaucoup de bagages.
+    - Musique autorisée.
+    - Pause café
+- Gérer les réservations :
+  - Consulter les demandes de réservation.
+  - Accepter ou refuser une demande.
+  - Voir les informations des passagers.
+  - Envoyer un message aux passagers.
+  - Annuler une réservation.
+  - Annuler le trajet.
+  - Consulter la liste des passagers confirmés.
+- Consulter les avis et notes reçus.
+
+Passager
+- Rechercher un trajet.
+- Utiliser la recherche simple :
+  - Ville de départ.
+  - Ville d'arrivée.
+  - Date.
+- Utiliser les filtres avancés :
+  - Prix maximum.
+  - Heure de départ.
+  - Type de voiture.
+  - Conducteurs acceptant beaucoup de bagages.
+  - Note minimale du conducteur.
+  - Femmes uniquement.
+- Réserver une ou plusieurs places.
+- Annuler une réservation.
+- Noter le conducteur et laisser un commentaire.
+
+Administrateur
+- Gérer les utilisateurs :
+  - Activer un compte.
+  - Désactiver un compte.
+- Gérer les trajets :
+  - Supprimer les annonces inappropriées.
+- Modérer les commentaires :
+  - Consulter les avis publiés.
+  - Supprimer les commentaires offensants ou inappropriés.
+- Consulter les statistiques :
+  - Nombre d'utilisateurs.
+  - Nombre de trajets.
+  - Nombre de réservations.
+  - Nombre de commentaires.
+
+3. Fonctionnalités Principales
+
+Authentification
+- Inscription.
+- Connexion.
+- Déconnexion.
+
+Gestion du Profil
+- Modifier les informations personnelles.
+- Ajouter une photo.
+- Consulter les avis.
+
+Gestion des Trajets
+- Publier un trajet.
+- Modifier ou supprimer un trajet.
+- Consulter les trajets publiés.
+
+Recherche et Réservation
+- Rechercher par ville de départ, destination et date.
+- Utiliser des filtres avancés.
+- Réserver une ou plusieurs places.
+- Annuler une réservation.
+
+Avis et Notes
+- Donner une note de 1 à 5.
+- Ajouter un commentaire.
+
+Administration
+- Gestion des utilisateurs.
+- Gestion des trajets.
+- Modération des commentaires.
+- Consultation des statistiques.
+
+4. Exigences Fonctionnelles
+
+- Un utilisateur peut créer un compte.
+- Un conducteur peut publier un trajet.
+- Un passager peut rechercher et réserver un trajet.
+- Les utilisateurs peuvent laisser des avis.
+- L'administrateur peut gérer la plateforme.
+
+5. Exigences Non Fonctionnelles
+
+- Interface simple et responsive.
+- Temps de réponse rapide.
+- Sécurité des données.
+- Disponibilité 24h/24.
+
+
+
+

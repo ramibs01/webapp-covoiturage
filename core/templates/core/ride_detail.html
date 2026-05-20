@@ -1,0 +1,287 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ ride.villeDepart }} → {{ ride.villeArrivee }} - Covoiturage Tunisie{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Ride details, Preferences, Map, and Reviews (2 cols) -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Ride Main Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <span class="bg-primary-50 text-primary-700 font-bold px-3 py-1 rounded-full text-xs">
+                            {{ ride.get_statut_display }}
+                        </span>
+                        <h1 class="text-2xl font-extrabold text-slate-900 mt-2">Détails du Trajet</h1>
+                        <p class="text-sm text-slate-400 mt-1">Publié le {{ ride.dateTrajet }}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-3xl font-extrabold text-primary-600">{{ ride.prixParPlace }} TND</span>
+                        <span class="text-xs text-slate-400">par place</span>
+                    </div>
+                </div>
+
+                <!-- Timeline Route Details -->
+                <div class="space-y-6 relative pl-6 border-b border-slate-100 pb-6 mb-6">
+                    <div class="absolute left-[7px] top-3 bottom-3 w-0.5 bg-slate-200"></div>
+                    
+                    <div class="relative">
+                        <div class="absolute -left-[23px] top-1.5 w-3 h-3 rounded-full bg-primary-600 ring-4 ring-primary-100"></div>
+                        <div class="text-xs text-slate-400 font-bold uppercase">{{ ride.heureDepart }}</div>
+                        <div class="text-base font-bold text-slate-800">{{ ride.villeDepart }}</div>
+                    </div>
+                    
+                    <div class="relative">
+                        <div class="absolute -left-[23px] top-1.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-emerald-100"></div>
+                        <div class="text-xs text-slate-400 font-bold uppercase">Date de départ</div>
+                        <div class="text-base font-bold text-slate-800">{{ ride.villeArrivee }} ({{ ride.dateTrajet }})</div>
+                    </div>
+                </div>
+
+                <!-- Preferences list -->
+                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Préférences de voyage</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 border-b border-slate-100 pb-6">
+                    <div class="flex items-center text-sm {% if ride.preferences.nonFumeur %}text-emerald-700{% else %}text-slate-400 line-through{% endif %}">
+                        <i class="fa-solid fa-smoking-ban mr-2"></i> Non-fumeur
+                    </div>
+                    <div class="flex items-center text-sm {% if ride.preferences.femmesUniquement %}text-purple-700{% else %}text-slate-400 line-through{% endif %}">
+                        <i class="fa-solid fa-venus mr-2"></i> Femmes uniquement
+                    </div>
+                    <div class="flex items-center text-sm {% if ride.preferences.accepteAnimaux %}text-emerald-700{% else %}text-slate-400 line-through{% endif %}">
+                        <i class="fa-solid fa-paw mr-2"></i> Animaux autorisés
+                    </div>
+                    <div class="flex items-center text-sm {% if ride.preferences.accepteBagagesVolumineux %}text-emerald-700{% else %}text-slate-400 line-through{% endif %}">
+                        <i class="fa-solid fa-suitcase-rolling mr-2"></i> Grands bagages
+                    </div>
+                    <div class="flex items-center text-sm {% if ride.preferences.musiqueAutorisee %}text-emerald-700{% else %}text-slate-400 line-through{% endif %}">
+                        <i class="fa-solid fa-music mr-2"></i> Musique autorisée
+                    </div>
+                    <div class="flex items-center text-sm {% if ride.preferences.pauseCafe %}text-emerald-700{% else %}text-slate-400 line-through{% endif %}">
+                        <i class="fa-solid fa-mug-hot mr-2"></i> Pause café
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Description</h3>
+                <p class="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    {% if ride.description %}{{ ride.description }}{% else %}Aucune description supplémentaire fournie par le conducteur.{% endif %}
+                </p>
+            </div>
+
+            <!-- Leaflet Map Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="p-4 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800"><i class="fa-solid fa-map-location-dot mr-1.5 text-slate-400"></i>Aperçu de la route</h3>
+                </div>
+                <div id="ride-map" class="h-80 w-full z-10"></div>
+            </div>
+
+            <!-- Reviews Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-lg mb-6"><i class="fa-solid fa-star text-amber-500 mr-2"></i>Avis des voyageurs ({{ reviews.count }})</h3>
+                
+                <div class="space-y-6">
+                    {% for review in reviews %}
+                        <div class="border-b border-slate-100 pb-6 last:border-b-0 last:pb-0">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-8 w-8 rounded-full bg-slate-150 text-slate-600 flex items-center justify-center font-bold text-xs">
+                                        {{ review.passenger.first_name|slice:":1" }}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800">{{ review.passenger.first_name }}</h4>
+                                        <span class="text-[10px] text-slate-400">{{ review.dateAvis }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex text-amber-400 text-xs">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.note %}
+                                            <i class="fa-solid fa-star"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-600 italic">"{{ review.commentaire }}"</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-sm text-slate-400 text-center py-6">Aucun avis disponible pour ce conducteur pour le moment.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar: Driver Details & Booking Panel (1 col) -->
+        <div class="lg:col-span-1 space-y-8">
+            
+            <!-- Driver Profile Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center">
+                <div class="relative inline-block mx-auto mb-4">
+                    {% if ride.driver.photoProfil %}
+                        <img class="h-24 w-24 rounded-full object-cover ring-4 ring-primary-100" src="{{ ride.driver.photoProfil.url }}" alt="{{ ride.driver.username }}">
+                    {% else %}
+                        <div class="h-24 w-24 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-3xl mx-auto ring-4 ring-primary-50">
+                            {{ ride.driver.first_name|slice:":1" }}
+                        </div>
+                    {% endif %}
+                    <span class="absolute bottom-0 right-1 bg-emerald-500 text-white p-1 rounded-full text-xs shadow-md border-2 border-white" title="Compte Vérifié">
+                        <i class="fa-solid fa-user-check"></i>
+                    </span>
+                </div>
+                
+                <h3 class="text-lg font-bold text-slate-800">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h3>
+                <span class="text-xs text-slate-400">Membre depuis {{ ride.driver.date_joined|date:"M Y" }}</span>
+                
+                <!-- Ratings Badge -->
+                <div class="flex items-center justify-center text-amber-500 gap-1 mt-2 mb-4">
+                    <i class="fa-solid fa-star"></i>
+                    <span class="font-extrabold text-slate-800 text-sm">{{ ride.driver.noteMoyenne }}</span>
+                    <span class="text-xs text-slate-400">({{ ride.driver.nombreAvis }} avis)</span>
+                </div>
+
+                <!-- Vehicle Info -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-left text-xs space-y-2 mt-4">
+                    <div class="font-bold text-slate-500 uppercase tracking-wider text-[10px] mb-1">Véhicule Utilisé</div>
+                    <div><span class="font-semibold text-slate-700">Modèle:</span> {{ ride.vehicle.marque }} {{ ride.vehicle.modele }}</div>
+                    <div><span class="font-semibold text-slate-700">Couleur:</span> {{ ride.vehicle.couleur }}</div>
+                    <div><span class="font-semibold text-slate-700">Immatriculation:</span> {{ ride.vehicle.immatriculation }}</div>
+                    <div><span class="font-semibold text-slate-700">Places Max:</span> {{ ride.vehicle.nombrePlaces }} places</div>
+                </div>
+
+                <!-- Action Direct message to driver -->
+                {% if user.is_authenticated and user != ride.driver %}
+                    <div class="mt-6 border-t border-slate-100 pt-4">
+                        <button onclick="document.getElementById('message-dialog').style.display='block';" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-2 px-4 rounded-xl border border-slate-200 transition-all text-sm flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-envelope"></i> Contacter le conducteur
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Booking Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-md ring-1 ring-slate-900/5">
+                <h3 class="font-bold text-slate-800 text-base mb-4">Réserver votre place</h3>
+                
+                {% if ride.statut != 'OUVERT' %}
+                    <div class="bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200 text-sm font-medium mb-4">
+                        Ce trajet n'est plus disponible aux réservations ({{ ride.get_statut_display }}).
+                    </div>
+                {% elif places_restantes == 0 %}
+                    <div class="bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200 text-sm font-medium mb-4">
+                        Complet ! Toutes les places ont été réservées.
+                    </div>
+                {% elif user.is_authenticated %}
+                    {% if user == ride.driver %}
+                        <div class="bg-blue-50 text-blue-800 p-4 rounded-xl border border-blue-200 text-sm font-medium mb-4">
+                            Vous êtes le conducteur de ce trajet. Vous pouvez le gérer depuis votre tableau de bord.
+                        </div>
+                    {% else %}
+                        <form action="{% url 'request_booking' ride.pk %}" method="POST" class="space-y-4">
+                            {% csrf_token %}
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre de places</label>
+                                <select name="nombrePlacesReservees" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all">
+                                    {% for i in "12345678" %}
+                                        {% if forloop.counter <= places_restantes %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter }} place{{ forloop.counter|pluralize }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-primary-600/30 transition-all text-sm">
+                                Demander à réserver
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 text-center mb-4">
+                        <p class="text-sm text-slate-500">Connectez-vous pour demander une réservation sur ce trajet.</p>
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="block bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all mt-3">
+                            Se connecter
+                        </a>
+                    </div>
+                {% endif %}
+                
+                <div class="border-t border-slate-100 mt-4 pt-4 text-[11px] text-slate-400 space-y-2">
+                    <div><i class="fa-solid fa-chair mr-2"></i>{{ places_restantes }} places encore libres</div>
+                    <div><i class="fa-solid fa-check-double mr-2"></i>Confirmation du conducteur requise</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Send Message Dialog -->
+{% if user.is_authenticated %}
+<div id="message-dialog" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display:none;">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full border border-slate-100 overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-bold text-slate-800">Contacter {{ ride.driver.first_name }}</h3>
+            <button onclick="document.getElementById('message-dialog').style.display='none';" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark fa-lg"></i></button>
+        </div>
+        <form action="{% url 'send_message' ride.driver.id %}" method="POST" class="p-6 space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Votre Message</label>
+                {{ message_form.contenu }}
+            </div>
+            <div class="flex justify-end gap-3 mt-4">
+                <button type="button" onclick="document.getElementById('message-dialog').style.display='none';" class="px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-xl text-sm font-semibold transition-colors">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-primary-600/10 transition-colors">Envoyer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize map centering on Tunisia
+    var map = L.map('ride-map').setView([36.8065, 10.1815], 7); // Tunis coordinates
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Mock geolocation points for major Tunisian cities to display routing pins
+    var cities = {
+        'Tunis': [36.8065, 10.1815],
+        'Sousse': [35.8256, 10.63699],
+        'Sfax': [34.7406, 10.7603],
+        'Monastir': [35.7780, 10.8262],
+        'Bizerte': [37.2744, 9.8739],
+        'Gabes': [33.8815, 10.0982],
+        'Kairouan': [35.6781, 10.0963],
+        'Nabeul': [36.4561, 10.7376],
+        'Hammamet': [36.4000, 10.6167],
+        'Gafsa': [34.4250, 8.7842],
+        'Djerba': [33.8076, 10.8451]
+    };
+
+    var startCity = "{{ ride.villeDepart }}";
+    var endCity = "{{ ride.villeArrivee }}";
+    
+    var startCoords = cities[startCity];
+    var endCoords = cities[endCity];
+
+    // Fallback if city name not in dictionary (use slightly random offset from Tunis)
+    if (!startCoords) startCoords = [36.8065 + (Math.random() - 0.5) * 0.5, 10.1815 + (Math.random() - 0.5) * 0.5];
+    if (!endCoords) endCoords = [35.8256 + (Math.random() - 0.5) * 0.5, 10.63699 + (Math.random() - 0.5) * 0.5];
+
+    var startMarker = L.marker(startCoords).addTo(map).bindPopup("<b>Départ:</b> " + startCity).openPopup();
+    var endMarker = L.marker(endCoords).addTo(map).bindPopup("<b>Arrivée:</b> " + endCity);
+
+    // Draw line between pins
+    var latlngs = [startCoords, endCoords];
+    var polyline = L.polyline(latlngs, {color: '#16a34a', weight: 4, opacity: 0.8}).addTo(map);
+
+    // Zoom map to fit path
+    map.fitBounds(polyline.getBounds(), {padding: [50, 50]});
+</script>
+{% endblock %}

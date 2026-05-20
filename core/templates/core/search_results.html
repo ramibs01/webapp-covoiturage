@@ -1,0 +1,175 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Résultats de recherche - Covoiturage Tunisie{% endblock %}
+
+{% block content %}
+<div class="bg-slate-100 border-b border-slate-200 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-2xl font-bold text-slate-800">Trajets trouvés</h1>
+        <p class="text-sm text-slate-500 mt-1">Recherche pour : 
+            <span class="font-semibold text-slate-700">{% if departure %}{{ departure }}{% else %}N'importe où{% endif %}</span> 
+            → 
+            <span class="font-semibold text-slate-700">{% if destination %}{{ destination }}{% else %}N'importe où{% endif %}</span>
+            {% if date %}le <span class="font-semibold text-slate-700">{{ date }}</span>{% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar: Filters -->
+        <div class="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm h-fit">
+            <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center justify-between">
+                <span>Filtres</span>
+                <a href="{% url 'search' %}?departure={{ departure }}&destination={{ destination }}&date={{ date }}" class="text-xs text-primary-600 hover:underline">Réinitialiser</a>
+            </h2>
+            
+            <form method="GET" action="{% url 'search' %}" class="space-y-6">
+                <!-- Retain main search params in hidden fields -->
+                <input type="hidden" name="departure" value="{{ departure }}">
+                <input type="hidden" name="destination" value="{{ destination }}">
+                <input type="hidden" name="date" value="{{ date }}">
+
+                <!-- Price Slider -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Prix maximum (TND)</label>
+                    <input type="range" name="max_price" min="5" max="100" step="5" value="{% if max_price %}{{ max_price }}{% else %}100{% endif %}" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary-600" oninput="this.nextElementSibling.value = this.value + ' TND'">
+                    <output class="block text-xs font-bold text-slate-500 mt-2">{% if max_price %}{{ max_price }} TND{% else %}100 TND{% endif %}</output>
+                </div>
+
+                <!-- Checkboxes preferences -->
+                <div class="border-t border-slate-100 pt-6 space-y-4">
+                    <label class="block text-sm font-semibold text-slate-700">Préférences du trajet</label>
+                    
+                    <div class="flex items-center">
+                        <input id="non_fumeur" name="non_fumeur" type="checkbox" {% if non_fumeur %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="non_fumeur" class="ml-3 text-sm text-slate-600">
+                            <i class="fa-solid fa-smoking-ban mr-1.5 text-slate-400"></i> Non-fumeur
+                        </label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="femmes_uniquement" name="femmes_uniquement" type="checkbox" {% if femmes_uniquement %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="femmes_uniquement" class="ml-3 text-sm text-slate-600">
+                            <i class="fa-solid fa-venus mr-1.5 text-slate-400"></i> Femmes uniquement
+                        </label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="accepte_animaux" name="accepte_animaux" type="checkbox" {% if accepte_animaux %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="accepte_animaux" class="ml-3 text-sm text-slate-600">
+                            <i class="fa-solid fa-paw mr-1.5 text-slate-400"></i> Animaux acceptés
+                        </label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="bagages" name="bagages" type="checkbox" {% if bagages %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                        <label for="bagages" class="ml-3 text-sm text-slate-600">
+                            <i class="fa-solid fa-suitcase-rolling mr-1.5 text-slate-400"></i> Grands bagages
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-primary-600/20 text-sm">
+                    Filtrer
+                </button>
+            </form>
+        </div>
+
+        <!-- Main Column: List of Rides -->
+        <div class="lg:col-span-3 space-y-6">
+            {% for ride in rides %}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row overflow-hidden">
+                    <!-- Left: Route Info -->
+                    <div class="flex-grow p-6 flex flex-col justify-between">
+                        <div>
+                            <!-- Driver Card -->
+                            <div class="flex items-center gap-3 mb-6">
+                                {% if ride.driver.photoProfil %}
+                                    <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.photoProfil.url }}" alt="{{ ride.driver.username }}">
+                                {% else %}
+                                    <div class="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
+                                        {{ ride.driver.first_name|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h4>
+                                    <div class="flex items-center text-xs text-amber-500 gap-0.5">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="font-bold text-slate-600">{{ ride.driver.noteMoyenne }}</span>
+                                        <span class="text-slate-400">({{ ride.driver.nombreAvis }} avis)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Route Visual representation -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-4 relative pl-5">
+                                    <div class="absolute left-1.5 top-2.5 bottom-2.5 w-0.5 bg-slate-200"></div>
+                                    
+                                    <div class="relative">
+                                        <div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-primary-500 ring-4 ring-primary-100"></div>
+                                        <div class="text-xs text-slate-400 font-bold uppercase">{{ ride.heureDepart }}</div>
+                                        <div class="text-sm font-bold text-slate-800">{{ ride.villeDepart }}</div>
+                                    </div>
+                                    
+                                    <div class="relative">
+                                        <div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100"></div>
+                                        <div class="text-xs text-slate-400 font-bold uppercase">Date: {{ ride.dateTrajet }}</div>
+                                        <div class="text-sm font-bold text-slate-800">{{ ride.villeArrivee }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-xs text-slate-500 space-y-2 border-l border-slate-100 pl-4 md:pl-6">
+                                    <div><i class="fa-solid fa-car mr-2 text-slate-400"></i>{{ ride.vehicle.marque }} {{ ride.vehicle.modele }} ({{ ride.vehicle.couleur }})</div>
+                                    <div><i class="fa-solid fa-chair mr-2 text-slate-400"></i>{{ ride.calculerPlacesRestantes }} places restantes / {{ ride.placesDisponibles }}</div>
+                                    {% if ride.preferences.femmesUniquement %}
+                                        <div class="text-purple-600 font-medium"><i class="fa-solid fa-venus mr-2"></i>Réservé aux femmes</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preferences bottom bar -->
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            {% if ride.preferences.nonFumeur %}
+                                <span class="bg-slate-50 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-100" title="Non-fumeur">
+                                    <i class="fa-solid fa-smoking-ban mr-1"></i> Non-fumeur
+                                </span>
+                            {% endif %}
+                            {% if ride.preferences.accepteAnimaux %}
+                                <span class="bg-slate-50 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-100" title="Animaux acceptés">
+                                    <i class="fa-solid fa-paw mr-1"></i> Animaux
+                                </span>
+                            {% endif %}
+                            {% if ride.preferences.pauseCafe %}
+                                <span class="bg-slate-50 text-slate-600 text-xs px-2.5 py-1 rounded-md border border-slate-100" title="Pause café">
+                                    <i class="fa-solid fa-mug-hot mr-1"></i> Pause café
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Right: Price and Action -->
+                    <div class="bg-slate-50 md:w-48 p-6 flex flex-row md:flex-col justify-between items-center md:justify-center md:items-center gap-4 border-t md:border-t-0 md:border-l border-slate-150">
+                        <div class="text-center">
+                            <span class="block text-2xl font-extrabold text-slate-900">{{ ride.prixParPlace }} TND</span>
+                            <span class="text-xs text-slate-400">par place</span>
+                        </div>
+                        
+                        <a href="{% url 'ride_detail' ride.pk %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-xl text-center shadow-md shadow-primary-600/10 hover:shadow-primary-700/20 text-sm transition-all w-full">
+                            Voir détails
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                    <div class="text-slate-400 text-5xl mb-4"><i class="fa-solid fa-car-rear"></i></div>
+                    <h3 class="text-lg font-bold text-slate-700">Aucun trajet ne correspond à vos critères</h3>
+                    <p class="text-sm text-slate-500 mt-2 max-w-md mx-auto">Essayez d'élargir votre recherche, d'ajuster les filtres ou de modifier les villes d'arrivée et de départ.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

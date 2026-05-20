@@ -1,0 +1,259 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mon Tableau de Bord - Covoiturage Tunisie{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="md:flex md:items-center md:justify-between mb-8 border-b border-slate-200 pb-6">
+        <div class="flex-1 min-w-0">
+            <h1 class="text-3xl font-extrabold text-slate-900 leading-tight">Mon Tableau de Bord</h1>
+            <p class="text-sm text-slate-500 mt-1">Gérez vos trajets publiés, vos réservations et vos avis.</p>
+        </div>
+        
+        <!-- Toggle button to publish if driver -->
+        <div class="mt-4 flex md:mt-0 md:ml-4 gap-3">
+            {% if user.numeroPermis %}
+                <a href="{% url 'publish_ride' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-primary-600/10 hover:shadow-primary-700/20 text-sm transition-all flex items-center">
+                    <i class="fa-solid fa-plus-circle mr-1.5"></i> Publier un trajet
+                </a>
+            {% else %}
+                <a href="{% url 'profile' %}" class="bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold py-2.5 px-4 rounded-xl border border-amber-200 text-sm transition-all flex items-center">
+                    <i class="fa-solid fa-id-card mr-1.5"></i> Devenir Conducteur
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tab Selection Buttons -->
+    <div class="border-b border-slate-200 mb-8">
+        <nav class="flex space-x-8" aria-label="Tabs">
+            <button id="btn-passenger" onclick="switchTab('passenger')" class="border-primary-500 text-primary-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2">
+                <i class="fa-solid fa-suitcase"></i> Espace Passager
+            </button>
+            {% if user.numeroPermis %}
+                <button id="btn-driver" onclick="switchTab('driver')" class="border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-car"></i> Espace Conducteur
+                </button>
+            {% endif %}
+        </nav>
+    </div>
+
+    <!-- ================== PASSENGER TAB ================== -->
+    <div id="tab-passenger" class="space-y-6">
+        <h2 class="text-xl font-bold text-slate-800">Mes Réservations de Covoiturage</h2>
+        
+        <div class="grid grid-cols-1 gap-6">
+            {% for booking in my_bookings %}
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold 
+                                {% if booking.statut == StatutReservation.CONFIRMEE %}bg-emerald-50 text-emerald-700 border border-emerald-100
+                                {% elif booking.statut == StatutReservation.EN_ATTENTE %}bg-amber-50 text-amber-700 border border-amber-100
+                                {% elif booking.statut == StatutReservation.REFUSEE %}bg-rose-50 text-rose-700 border border-rose-100
+                                {% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                                {{ booking.get_statut_display }}
+                            </span>
+                            <span class="text-xs text-slate-400">Demande envoyée le {{ booking.dateReservation }}</span>
+                        </div>
+
+                        <!-- Route info -->
+                        <div class="flex items-center gap-4 text-sm font-bold text-slate-800">
+                            <span>{{ booking.ride.villeDepart }}</span>
+                            <i class="fa-solid fa-arrow-right-long text-slate-300"></i>
+                            <span>{{ booking.ride.villeArrivee }}</span>
+                        </div>
+
+                        <!-- Ride Details -->
+                        <div class="text-xs text-slate-500 space-y-1">
+                            <div><i class="fa-solid fa-calendar mr-2 text-slate-400"></i>Départ le : {{ booking.ride.dateTrajet }} à {{ booking.ride.heureDepart }}</div>
+                            <div><i class="fa-solid fa-chair mr-2 text-slate-400"></i>Nombre de places réservées : {{ booking.nombrePlacesReservees }}</div>
+                            <div><i class="fa-solid fa-user-tie mr-2 text-slate-400"></i>Conducteur : {{ booking.ride.driver.first_name }} {{ booking.ride.driver.last_name }} ({{ booking.ride.driver.telephone }})</div>
+                        </div>
+                    </div>
+
+                    <!-- Price & Actions Column -->
+                    <div class="flex flex-row md:flex-col justify-between items-center md:items-end w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0 gap-4">
+                        <div class="text-left md:text-right">
+                            <span class="block text-xl font-extrabold text-slate-800">{{ booking.prixTotal }} TND</span>
+                            <span class="text-[10px] text-slate-400">Total payé/à payer au conducteur</span>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <a href="{% url 'ride_detail' booking.ride.pk %}" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-3 rounded-xl border border-slate-200 text-xs transition-colors">
+                                Détails trajet
+                            </a>
+
+                            {% if booking.statut == StatutReservation.EN_ATTENTE or booking.statut == StatutReservation.CONFIRMEE %}
+                                <a href="{% url 'cancel_booking' booking.pk %}" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold py-2 px-3 rounded-xl text-xs transition-colors" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette réservation ?');">
+                                    Annuler
+                                </a>
+                            {% endif %}
+
+                            {% if booking.statut == StatutReservation.CONFIRMEE and not booking.note %}
+                                <a href="{% url 'leave_review' booking.pk %}" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-3 rounded-xl text-xs transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-star"></i> Laisser un avis
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                    <div class="text-slate-400 text-4xl mb-3"><i class="fa-solid fa-suitcase"></i></div>
+                    <h3 class="text-base font-bold text-slate-700">Aucune réservation en cours</h3>
+                    <p class="text-xs text-slate-400 mt-1">Recherchez un trajet pour commencer à voyager avec Covoiturage Tunisie.</p>
+                    <a href="{% url 'search' %}" class="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition-all mt-4">
+                        Rechercher un trajet
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ================== DRIVER TAB ================== -->
+    {% if user.numeroPermis %}
+    <div id="tab-driver" class="hidden space-y-8">
+        
+        <!-- Pending Bookings Approval Section -->
+        <div class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span>Demandes de Réservations en attente</span>
+                {% if pending_approvals.count > 0 %}
+                    <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-bold">{{ pending_approvals.count }}</span>
+                {% endif %}
+            </h2>
+            
+            <div class="grid grid-cols-1 gap-4">
+                {% for approval in pending_approvals %}
+                    <div class="bg-amber-50/50 rounded-2xl border border-amber-200/60 p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">En Attente de validation</span>
+                                <span class="text-xs text-slate-400">Demandé le {{ approval.dateReservation }}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-800">
+                                Passager : {{ approval.passenger.first_name }} {{ approval.passenger.last_name }} (Note: {{ approval.passenger.noteMoyenne }} ★)
+                            </h4>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Trajet : <span class="font-semibold">{{ approval.ride.villeDepart }} → {{ approval.ride.villeArrivee }}</span> le {{ approval.ride.dateTrajet }}
+                            </p>
+                            <p class="text-xs text-slate-500">
+                                Places demandées : <span class="font-bold text-slate-800">{{ approval.nombrePlacesReservees }}</span> | Prix total : <span class="font-bold text-slate-800">{{ approval.prixTotal }} TND</span>
+                            </p>
+                        </div>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <a href="{% url 'approve_booking' approval.pk %}" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs text-center transition-colors">
+                                Accepter
+                            </a>
+                            <a href="{% url 'reject_booking' approval.pk %}" class="flex-1 md:flex-none bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-2 px-4 rounded-xl text-xs text-center transition-colors">
+                                Refuser
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="bg-slate-50 rounded-2xl border border-slate-150 p-6 text-center text-xs text-slate-400">
+                        Aucune demande de réservation en attente.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Published rides list -->
+        <div class="space-y-4 pt-6 border-t border-slate-100">
+            <h2 class="text-xl font-bold text-slate-800">Mes Trajets Publiés</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                {% for ride in published_rides %}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold 
+                                    {% if ride.statut == StatutTrajet.OUVERT %}bg-emerald-50 text-emerald-700 border border-emerald-100
+                                    {% elif ride.statut == StatutTrajet.COMPLET %}bg-blue-50 text-blue-700 border border-blue-100
+                                    {% elif ride.statut == StatutTrajet.ANNULE %}bg-rose-50 text-rose-700 border border-rose-100
+                                    {% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                                    {{ ride.get_statut_display }}
+                                </span>
+                                <span class="text-xs text-slate-400">Publié pour le {{ ride.dateTrajet }}</span>
+                            </div>
+
+                            <!-- Route info -->
+                            <div class="flex items-center gap-4 text-sm font-bold text-slate-800">
+                                <span>{{ ride.villeDepart }}</span>
+                                <i class="fa-solid fa-arrow-right-long text-slate-300"></i>
+                                <span>{{ ride.villeArrivee }}</span>
+                            </div>
+
+                            <!-- Ride Details -->
+                            <div class="text-xs text-slate-500 space-y-1">
+                                <div><i class="fa-solid fa-clock mr-2 text-slate-400"></i>Heure de départ : {{ ride.heureDepart }}</div>
+                                <div><i class="fa-solid fa-chair mr-2 text-slate-400"></i>Places disponibles initiales : {{ ride.placesDisponibles }}</div>
+                                <div><i class="fa-solid fa-check mr-2 text-slate-400"></i>Places restantes : {{ ride.calculerPlacesRestantes }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Price & Actions Column -->
+                        <div class="flex flex-row md:flex-col justify-between items-center md:items-end w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0 gap-4">
+                            <div class="text-left md:text-right">
+                                <span class="block text-xl font-extrabold text-slate-800">{{ ride.prixParPlace }} TND</span>
+                                <span class="text-[10px] text-slate-400">par place</span>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <a href="{% url 'ride_detail' ride.pk %}" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-3 rounded-xl border border-slate-200 text-xs transition-colors">
+                                    Détails
+                                </a>
+
+                                {% if ride.statut == StatutTrajet.OUVERT or ride.statut == StatutTrajet.COMPLET %}
+                                    <a href="{% url 'edit_ride' ride.pk %}" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-3 rounded-xl border border-slate-200 text-xs transition-colors">
+                                        Modifier
+                                    </a>
+                                    <a href="{% url 'cancel_ride' ride.pk %}" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold py-2 px-3 rounded-xl text-xs transition-colors" onclick="return confirm('Êtes-vous sûr de vouloir annuler ce trajet ? Tous les passagers confirmés recevront une notification d\'annulation.');">
+                                        Annuler
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                        <div class="text-slate-400 text-4xl mb-3"><i class="fa-solid fa-road"></i></div>
+                        <h3 class="text-base font-bold text-slate-700">Aucun trajet publié</h3>
+                        <p class="text-xs text-slate-400 mt-1">Vous n'avez publié aucun trajet pour le moment.</p>
+                        <a href="{% url 'publish_ride' %}" class="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition-all mt-4">
+                            Publier un trajet
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tab) {
+        const passengerTab = document.getElementById('tab-passenger');
+        const driverTab = document.getElementById('tab-driver');
+        const passengerBtn = document.getElementById('btn-passenger');
+        const driverBtn = document.getElementById('btn-driver');
+
+        if (tab === 'passenger') {
+            passengerTab.classList.remove('hidden');
+            if (driverTab) driverTab.classList.add('hidden');
+
+            passengerBtn.className = "border-primary-500 text-primary-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2";
+            if (driverBtn) driverBtn.className = "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+        } else {
+            passengerTab.classList.add('hidden');
+            if (driverTab) driverTab.classList.remove('hidden');
+
+            passengerBtn.className = "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2";
+            if (driverBtn) driverBtn.className = "border-primary-500 text-primary-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm flex items-center gap-2";
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mon Profil - Covoiturage Tunisie{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left: Edit profile info (2 cols) -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-user-gear text-slate-400"></i> Modifier mes Informations Personnelles
+            </h2>
+            
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="profile_submit" value="1">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Prénom</label>
+                        <input type="text" name="first_name" value="{{ user.first_name }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nom de famille</label>
+                        <input type="text" name="last_name" value="{{ user.last_name }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Adresse Email</label>
+                        <input type="email" name="email" value="{{ user.email }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Téléphone</label>
+                        <input type="text" name="telephone" value="{{ user.telephone|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" placeholder="Ex: +216 99 999 999" required>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Adresse de résidence</label>
+                        <input type="text" name="adresse" value="{{ user.adresse|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" placeholder="Ex: Menzah 9, Tunis">
+                    </div>
+                    
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Numéro de Permis de Conduire (requis pour être Conducteur)</label>
+                        <input type="text" name="numeroPermis" value="{{ user.numeroPermis|default_if_none:'' }}" class="w-full px-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-all" placeholder="Ex: 01/234567">
+                        <p class="text-[10px] text-slate-400 mt-1">Saisir votre numéro de permis vous permet de publier des trajets.</p>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Photo de profil</label>
+                        <div class="flex items-center gap-4 mt-2">
+                            {% if user.photoProfil %}
+                                <img class="h-12 w-12 rounded-full object-cover ring-2 ring-primary-100" src="{{ user.photoProfil.url }}" alt="{{ user.username }}">
+                            {% endif %}
+                            <input type="file" name="photoProfil" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-all">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md shadow-primary-600/10 transition-colors text-sm">
+                    Enregistrer les modifications
+                </button>
+            </form>
+        </div>
+
+        <!-- Right: Vehicles section (1 col) -->
+        <div class="lg:col-span-1 space-y-8">
+            
+            <!-- List of vehicles -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-lg mb-4"><i class="fa-solid fa-car text-slate-400 mr-2"></i>Mes Véhicules</h3>
+                
+                <div class="space-y-4 mb-6">
+                    {% for vehicle in vehicles %}
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-slate-800">{{ vehicle.marque }} {{ vehicle.modele }}</h4>
+                                <p class="text-slate-400 mt-0.5">Immat: {{ vehicle.immatriculation }}</p>
+                                <p class="text-slate-400">Couleur: {{ vehicle.couleur }} | {{ vehicle.nombrePlaces }} places max</p>
+                            </div>
+                            <span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                {{ vehicle.typeVehicule }}
+                            </span>
+                        </div>
+                    {% empty %}
+                        <p class="text-xs text-slate-400 text-center py-4">Aucun véhicule enregistré. Ajoutez-en un ci-dessous si vous êtes conducteur.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Add vehicle form -->
+                {% if user.numeroPermis %}
+                    <div class="border-t border-slate-100 pt-6">
+                        <h4 class="font-bold text-slate-800 text-sm mb-4">Ajouter un véhicule</h4>
+                        
+                        <form method="POST" class="space-y-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="vehicle_submit" value="1">
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Marque</label>
+                                    <input type="text" name="marque" placeholder="Ex: Peugeot" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Modèle</label>
+                                    <input type="text" name="modele" placeholder="Ex: 208" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Couleur</label>
+                                    <input type="text" name="couleur" placeholder="Ex: Noir" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Places</label>
+                                    <input type="number" name="nombrePlaces" min="1" max="9" value="4" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs outline-none" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Immatriculation</label>
+                                    <input type="text" name="immatriculation" placeholder="Ex: 123 TUN 4567" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs outline-none" required>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Type de véhicule</label>
+                                    <input type="text" name="typeVehicule" placeholder="Ex: Berline, Citadine" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs outline-none" required>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition-colors mt-2">
+                                Ajouter le véhicule
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

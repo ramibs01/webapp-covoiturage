@@ -1,0 +1,38 @@
+/* Custom styles for Covoiturage Tunisie v0 */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Leaflet map customization */
+.leaflet-container {
+    font-family: inherit;
+}
+
+.leaflet-popup-content-value {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

@@ -1,0 +1,238 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Covoiturage Tunisie - Partager vos trajets facilement{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="relative overflow-hidden bg-slate-900 py-24 sm:py-32">
+    <!-- Background visual assets -->
+    <div class="absolute inset-0 opacity-30">
+        <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-emerald-500 blur-3xl"></div>
+        <div class="absolute top-20 right-10 w-80 h-80 rounded-full bg-teal-600 blur-3xl"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-none">
+            Partagez vos trajets,<br class="sm:hidden"> divisez vos frais.
+        </h1>
+        <p class="mt-6 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto">
+            Rejoignez la communauté de covoiturage leader en Tunisie. Voyagez en toute sécurité à travers le pays à prix réduit.
+        </p>
+
+        <!-- Dynamic Search Widget inside Hero -->
+        <div class="mt-12 max-w-4xl mx-auto bg-white/95 p-6 rounded-2xl shadow-2xl border border-white/20 glassmorphic text-left">
+            <form action="{% url 'search' %}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Ville de Départ</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+                        <input type="text" name="departure" placeholder="Ex: Tunis, Sousse..." class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Destination</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                        </span>
+                        <input type="text" name="destination" placeholder="Ex: Sfax, Gabès..." class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Date</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </span>
+                        <input type="date" name="date" class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all">
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-primary-600/30 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Counter Section -->
+<div class="bg-white border-b border-slate-100 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="p-4">
+                <span class="block text-4xl font-extrabold text-primary-600 mb-1">{{ stats.nombreUtilisateurs }}</span>
+                <span class="text-sm font-semibold text-slate-500">Membres Actifs</span>
+            </div>
+            <div class="p-4">
+                <span class="block text-4xl font-extrabold text-primary-600 mb-1">{{ stats.nombreTrajets }}</span>
+                <span class="text-sm font-semibold text-slate-500">Trajets Proposés</span>
+            </div>
+            <div class="p-4">
+                <span class="block text-4xl font-extrabold text-primary-600 mb-1">{{ stats.nombreReservations }}</span>
+                <span class="text-sm font-semibold text-slate-500">Réservations Effectuées</span>
+            </div>
+            <div class="p-4">
+                <span class="block text-4xl font-extrabold text-primary-600 mb-1">{{ stats.nombreCommentaires }}</span>
+                <span class="text-sm font-semibold text-slate-500">Avis Vérifiés</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Core Features Section -->
+<div class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Pourquoi choisir Covoiturage Tunisie ?</h2>
+            <p class="mt-4 text-slate-500">
+                Une solution moderne, écologique et économique pour vous déplacer partout en Tunisie.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-center">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6 text-xl">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Très Économique</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    Divisez vos dépenses d'essence et de péages par 3 ou 4. C'est le moyen de transport inter-villes le plus abordable de Tunisie.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-center">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-6 text-xl">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Sécurisé & Confiant</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    Nous vérifions les profils, les numéros de téléphone et les permis de conduire des conducteurs pour un voyage serein.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-center">
+                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-6 text-xl">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Écologique</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    Moins de voitures individuelles sur la route signifie moins d'émissions de carbone et un trafic routier plus fluide.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent/Upcoming Rides Section -->
+<div class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900">Prochains trajets disponibles</h2>
+                <p class="mt-2 text-slate-500">Réservez dès maintenant votre place pour les prochains départs.</p>
+            </div>
+            <a href="{% url 'search' %}" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+                Voir tous les trajets <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for ride in recent_rides %}
+                <div class="bg-white rounded-2xl border border-slate-150 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+                    <div class="p-6">
+                        <!-- Driver Details Header -->
+                        <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
+                            <div class="flex items-center gap-3">
+                                {% if ride.driver.photoProfil %}
+                                    <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.photoProfil.url }}" alt="{{ ride.driver.username }}">
+                                {% else %}
+                                    <div class="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
+                                        {{ ride.driver.first_name|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h4>
+                                    <div class="flex items-center text-xs text-amber-500 gap-0.5">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="font-bold text-slate-600">{{ ride.driver.noteMoyenne }}</span>
+                                        <span class="text-slate-400">({{ ride.driver.nombreAvis }} avis)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-primary-50 text-primary-700 font-bold px-3 py-1 rounded-full text-xs">
+                                {{ ride.prixParPlace }} TND
+                            </div>
+                        </div>
+
+                        <!-- Route visualizer -->
+                        <div class="space-y-4 relative pl-5">
+                            <!-- timeline track -->
+                            <div class="absolute left-1.5 top-2.5 bottom-2.5 w-0.5 bg-slate-200"></div>
+                            
+                            <!-- Start City -->
+                            <div class="relative">
+                                <div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-primary-500 ring-4 ring-primary-100"></div>
+                                <div class="text-xs text-slate-400 font-bold uppercase">{{ ride.heureDepart }}</div>
+                                <div class="text-sm font-bold text-slate-800">{{ ride.villeDepart }}</div>
+                            </div>
+                            
+                            <!-- Destination City -->
+                            <div class="relative">
+                                <div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100"></div>
+                                <div class="text-xs text-slate-400 font-bold uppercase">Date: {{ ride.dateTrajet }}</div>
+                                <div class="text-sm font-bold text-slate-800">{{ ride.villeArrivee }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Info/Preferences tags -->
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            {% if ride.preferences.nonFumeur %}
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md font-medium" title="Non fumeur">
+                                    <i class="fa-solid fa-smoking-ban mr-1"></i> Non-fumeur
+                                </span>
+                            {% endif %}
+                            {% if ride.preferences.femmesUniquement %}
+                                <span class="bg-purple-50 text-purple-600 text-xs px-2.5 py-1 rounded-md font-medium" title="Femmes uniquement">
+                                    <i class="fa-solid fa-venus mr-1"></i> Femmes
+                                </span>
+                            {% endif %}
+                            {% if ride.preferences.accepteBagagesVolumineux %}
+                                <span class="bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-md font-medium" title="Bagages volumineux">
+                                    <i class="fa-solid fa-suitcase-rolling mr-1"></i> Grands Bagages
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Footer Action link -->
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 font-medium">
+                            <i class="fa-solid fa-user-group mr-1"></i> {{ ride.calculerPlacesRestantes }} places restantes
+                        </span>
+                        <a href="{% url 'ride_detail' ride.pk %}" class="bg-white hover:bg-slate-100 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-200 transition-colors">
+                            Voir Détails
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-full text-center py-12">
+                    <div class="text-slate-400 text-4xl mb-4"><i class="fa-solid fa-circle-info"></i></div>
+                    <h3 class="text-lg font-bold text-slate-700">Aucun trajet à venir pour l'instant</h3>
+                    <p class="text-sm text-slate-400 mt-1">Revenez plus tard ou lancez une recherche personnalisée.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center sm:hidden mt-8">
+            <a href="{% url 'search' %}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+                Voir tous les trajets <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
