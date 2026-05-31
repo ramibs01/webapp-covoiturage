@@ -27,7 +27,16 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fa-solid fa-location-dot"></i>
                         </span>
-                        <input type="text" name="departure" placeholder="Ex: Tunis, Sousse..." class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all" required>
+                        <input 
+                         type="text" 
+                         id="departure"
+                         name="departure" 
+                         autocomplete="off"
+                         placeholder="Ex: Tunis, Sousse..." 
+                         class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all" 
+                         required>
+                        <div id="departure-suggestions" class="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl overflow-y-auto z-50 hidden shadow-md" style="max-height: 220px;"></div>
+
                     </div>
                 </div>
                 <div>
@@ -36,7 +45,15 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fa-solid fa-flag-checkered"></i>
                         </span>
-                        <input type="text" name="destination" placeholder="Ex: Sfax, Gabès..." class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all" required>
+                        <input 
+                         type="text" 
+                         id="destination"
+                         name="destination" 
+                         autocomplete="off"
+                         placeholder="Ex: Gabes, Sfax..." 
+                         class="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm transition-all" 
+                         required>
+                        <div id="destination-suggestions" class="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl overflow-y-auto z-50 hidden shadow-md" style="max-height: 220px;"></div>
                     </div>
                 </div>
                 <div>
@@ -296,6 +313,7 @@
         </div>
     </div>
 </div>
+<script src="{% static "autocomplete.js" %}"></script> 
 {% endblock %}
 
 {% block scripts %}

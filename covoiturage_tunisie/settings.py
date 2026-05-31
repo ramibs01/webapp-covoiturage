@@ -52,7 +52,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'covoiturage_db',
         'USER': 'root',
-        'PASSWORD': 'root123',
+        'PASSWORD': 'Root123+',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
