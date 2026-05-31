@@ -139,75 +139,144 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {% for ride in recent_rides %}
-                <div class="bg-white rounded-2xl border border-slate-150 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-                    <div class="p-6">
-                        <!-- Driver Details Header -->
-                        <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
-                            <div class="flex items-center gap-3">
-                                <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.avatar_url }}" alt="{{ ride.driver.username }}">
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-800">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h4>
-                                    <div class="flex items-center text-xs text-amber-500 gap-0.5">
-                                        <i class="fa-solid fa-star"></i>
-                                        <span class="font-bold text-slate-600">{{ ride.driver.noteMoyenne }}</span>
-                                        <span class="text-slate-400">({{ ride.driver.nombreAvis }} avis)</span>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
+                    <!-- Main Card Body: Left info + Right Calendar -->
+                    <div class="flex flex-1">
+
+                        <!-- LEFT PANEL -->
+                        <div class="flex-1 p-5 flex flex-col gap-4 border-r border-slate-100">
+
+                            <!-- Driver Header -->
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center gap-3">
+                                    <img class="h-14 w-14 rounded-full object-cover ring-2 ring-slate-200 flex-shrink-0"
+                                         src="{{ ride.driver.avatar_url }}"
+                                         alt="{{ ride.driver.username }}">
+                                    <div>
+                                        <h4 class="text-base font-bold text-slate-900 leading-tight">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h4>
+                                        <div class="flex items-center gap-1 mt-0.5">
+                                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                                            <span class="text-sm font-semibold text-slate-700">{{ ride.driver.noteMoyenne }}</span>
+                                            <span class="text-xs text-slate-400">({{ ride.driver.nombreAvis }} avis)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Price Badge -->
+                                <div class="bg-primary-50 border border-primary-200 text-primary-700 font-bold px-3 py-1.5 rounded-xl text-sm whitespace-nowrap">
+                                    {{ ride.prixParPlace }},00 TND
+                                </div>
+                            </div>
+
+                            <!-- Divider -->
+                            <hr class="border-slate-100">
+
+                            <!-- Route Details with Icons -->
+                            <div class="relative flex flex-col gap-0">
+                                <!-- Dashed vertical connector line -->
+                                <div class="absolute left-[17px] top-[28px] bottom-[28px] w-px border-l-2 border-dashed border-slate-300 z-0"></div>
+
+                                <!-- Heure de départ -->
+                                <div class="flex items-start gap-3 relative z-10">
+                                    <div class="w-9 h-9 rounded-full bg-primary-50 border border-primary-200 flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-regular fa-clock text-primary-600 text-sm"></i>
+                                    </div>
+                                    <div class="pb-4">
+                                        <p class="text-xs text-slate-400 font-medium">Heure de départ</p>
+                                        <p class="text-sm font-bold text-slate-800">{{ ride.heureDepart }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Lieu de départ -->
+                                <div class="flex items-start gap-3 relative z-10">
+                                    <div class="w-9 h-9 rounded-full bg-primary-50 border border-primary-200 flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-square text-primary-600 text-sm"></i>
+                                    </div>
+                                    <div class="pb-4">
+                                        <p class="text-xs text-slate-400 font-medium">Lieu de départ</p>
+                                        <p class="text-sm font-bold text-slate-800">{{ ride.villeDepart }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Lieu d'arrivée -->
+                                <div class="flex items-start gap-3 relative z-10">
+                                    <div class="w-9 h-9 rounded-full bg-primary-50 border border-primary-200 flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-location-dot text-primary-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-400 font-medium">Lieu d'arrivée</p>
+                                        <p class="text-sm font-bold text-slate-800">{{ ride.villeArrivee }}</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-primary-50 text-primary-700 font-bold px-3 py-1 rounded-full text-xs">
-                                {{ ride.prixParPlace }} TND
+
+                            <!-- Preference Tags -->
+                            <div class="flex flex-wrap gap-2 mt-auto">
+                                {% if ride.preferences.nonFumeur %}
+                                    <span class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-full font-medium border border-slate-200">
+                                        <i class="fa-solid fa-smoking-ban text-slate-500"></i> Non-fumeur
+                                    </span>
+                                {% endif %}
+                                {% if ride.preferences.femmesUniquement %}
+                                    <span class="inline-flex items-center gap-1.5 bg-purple-50 text-purple-600 text-xs px-3 py-1.5 rounded-full font-medium border border-purple-200">
+                                        <i class="fa-solid fa-venus"></i> Femmes uniquement
+                                    </span>
+                                {% endif %}
+                                {% if ride.preferences.accepteBagagesVolumineux %}
+                                    <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 text-xs px-3 py-1.5 rounded-full font-medium border border-blue-200">
+                                        <i class="fa-solid fa-suitcase-rolling"></i> Grands Bagages
+                                    </span>
+                                {% endif %}
                             </div>
                         </div>
 
-                        <!-- Route visualizer -->
-                        <div class="space-y-4 relative pl-5">
-                            <!-- timeline track -->
-                            <div class="absolute left-1.5 top-2.5 bottom-2.5 w-0.5 bg-slate-200"></div>
-                            
-                            <!-- Start City -->
-                            <div class="relative">
-                                <div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-primary-500 ring-4 ring-primary-100"></div>
-                                <div class="text-xs text-slate-400 font-bold uppercase">{{ ride.heureDepart }}</div>
-                                <div class="text-sm font-bold text-slate-800">{{ ride.villeDepart }}</div>
+                        <!-- RIGHT PANEL: Calendar -->
+                        <div class="w-52 flex-shrink-0 p-4 flex flex-col gap-3 bg-slate-50/60">
+                            <!-- Date display -->
+                            <div>
+                                <div class="flex items-center gap-1.5 text-slate-500 text-xs font-medium mb-1">
+                                    <i class="fa-regular fa-calendar text-primary-600"></i>
+                                    <span>Date</span>
+                                </div>
+                                <p class="text-base font-extrabold text-slate-900 uppercase leading-tight">{{ ride.dateTrajet|date:"j N Y" }}</p>
+                                <p class="text-xs text-slate-400 mt-0.5">{{ ride.dateTrajet|date:"l" }}</p>
                             </div>
-                            
-                            <!-- Destination City -->
-                            <div class="relative">
-                                <div class="absolute -left-5 top-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100"></div>
-                                <div class="text-xs text-slate-400 font-bold uppercase">Date: {{ ride.dateTrajet }}</div>
-                                <div class="text-sm font-bold text-slate-800">{{ ride.villeArrivee }}</div>
-                            </div>
-                        </div>
 
-                        <!-- Info/Preferences tags -->
-                        <div class="flex flex-wrap gap-2 mt-6">
-                            {% if ride.preferences.nonFumeur %}
-                                <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md font-medium" title="Non fumeur">
-                                    <i class="fa-solid fa-smoking-ban mr-1"></i> Non-fumeur
-                                </span>
-                            {% endif %}
-                            {% if ride.preferences.femmesUniquement %}
-                                <span class="bg-purple-50 text-purple-600 text-xs px-2.5 py-1 rounded-md font-medium" title="Femmes uniquement">
-                                    <i class="fa-solid fa-venus mr-1"></i> Femmes
-                                </span>
-                            {% endif %}
-                            {% if ride.preferences.accepteBagagesVolumineux %}
-                                <span class="bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-md font-medium" title="Bagages volumineux">
-                                    <i class="fa-solid fa-suitcase-rolling mr-1"></i> Grands Bagages
-                                </span>
-                            {% endif %}
+                            <!-- Mini Calendar Widget -->
+                            <div class="ride-calendar bg-white rounded-xl border border-slate-200 p-3 shadow-sm text-xs"
+                                 data-date="{{ ride.dateTrajet|date:'Y-m-d' }}">
+                                <!-- Calendar Header -->
+                                <div class="flex items-center justify-between mb-2">
+                                    <button class="cal-prev text-slate-400 hover:text-primary-600 transition-colors p-0.5" type="button">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+                                    <span class="cal-title font-bold text-slate-700 uppercase text-xs tracking-wide"></span>
+                                    <button class="cal-next text-slate-400 hover:text-primary-600 transition-colors p-0.5" type="button">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <!-- Day Headers -->
+                                <div class="grid grid-cols-7 text-center mb-1">
+                                    {% for day in "LMMJVSD" %}
+                                        <span class="text-slate-400 font-semibold" style="font-size:9px;">{{ day }}</span>
+                                    {% endfor %}
+                                </div>
+                                <!-- Calendar Days Grid -->
+                                <div class="cal-grid grid grid-cols-7 text-center gap-y-0.5"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Footer Action link -->
-                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-500 font-medium">
-                            <i class="fa-solid fa-user-group mr-1"></i> {{ ride.calculerPlacesRestantes }} places restantes
+                    <!-- Footer -->
+                    <div class="px-5 py-3 border-t border-slate-100 flex items-center justify-between bg-white">
+                        <span class="flex items-center gap-1.5 text-sm font-semibold text-slate-600">
+                            <i class="fa-solid fa-users text-primary-500"></i>
+                            {{ ride.calculerPlacesRestantes }} places restantes
                         </span>
-                        <a href="{% url 'ride_detail' ride.pk %}" class="bg-white hover:bg-slate-100 text-slate-800 font-bold px-3 py-1.5 rounded-lg border border-slate-200 transition-colors">
-                            Voir Détails
+                        <a href="{% url 'ride_detail' ride.pk %}"
+                           class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold px-4 py-2 rounded-xl text-sm shadow-md shadow-primary-600/25 transition-all">
+                            Voir Détails <i class="fa-solid fa-chevron-right text-xs"></i>
                         </a>
                     </div>
                 </div>
@@ -227,4 +296,73 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const MONTH_NAMES_FR = ['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN',
+                            'JUILLET','AOÛT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DÉCEMBRE'];
+
+    function renderCalendar(container, rideDate, currentYear, currentMonth) {
+        const grid = container.querySelector('.cal-grid');
+        const title = container.querySelector('.cal-title');
+        title.textContent = MONTH_NAMES_FR[currentMonth] + ' ' + currentYear;
+
+        // First day of month (0=Sun..6=Sat → convert to Mon-first: Mon=0)
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const startOffset = (firstDay === 0) ? 6 : firstDay - 1; // Mon-first offset
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        grid.innerHTML = '';
+
+        // Empty cells before first day
+        for (let i = 0; i < startOffset; i++) {
+            const blank = document.createElement('span');
+            grid.appendChild(blank);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const cell = document.createElement('span');
+            cell.textContent = d;
+            cell.style.cssText = 'width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto;font-size:10px;cursor:default;';
+
+            const isRideDay = (rideDate &&
+                currentYear === rideDate.getFullYear() &&
+                currentMonth === rideDate.getMonth() &&
+                d === rideDate.getDate());
+
+            if (isRideDay) {
+                cell.style.backgroundColor = '#16a34a';
+                cell.style.color = '#ffffff';
+                cell.style.fontWeight = '700';
+            } else {
+                cell.style.color = '#475569';
+            }
+            grid.appendChild(cell);
+        }
+    }
+
+    document.querySelectorAll('.ride-calendar').forEach(function (cal) {
+        const dateStr = cal.getAttribute('data-date'); // 'YYYY-MM-DD'
+        let rideDate = dateStr ? new Date(dateStr + 'T00:00:00') : null;
+        let currentYear = rideDate ? rideDate.getFullYear() : new Date().getFullYear();
+        let currentMonth = rideDate ? rideDate.getMonth() : new Date().getMonth();
+
+        renderCalendar(cal, rideDate, currentYear, currentMonth);
+
+        cal.querySelector('.cal-prev').addEventListener('click', function () {
+            if (currentMonth === 0) { currentMonth = 11; currentYear--; }
+            else { currentMonth--; }
+            renderCalendar(cal, rideDate, currentYear, currentMonth);
+        });
+
+        cal.querySelector('.cal-next').addEventListener('click', function () {
+            if (currentMonth === 11) { currentMonth = 0; currentYear++; }
+            else { currentMonth++; }
+            renderCalendar(cal, rideDate, currentYear, currentMonth);
+        });
+    });
+})();
+</script>
 {% endblock %}
