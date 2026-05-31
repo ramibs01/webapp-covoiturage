@@ -92,20 +92,23 @@
                         {% endif %}
                         
                         <!-- Profile Dropdown -->
-                        <div class="relative ml-3 flex items-center gap-2 border-l border-slate-200 pl-4">
-                            <a href="{% url 'profile' %}" class="flex items-center gap-2 hover:opacity-80 transition-all">
-                                {% if user.photoProfil %}
-                                    <img class="h-8 w-8 rounded-full object-cover ring-2 ring-primary-100" src="{{ user.photoProfil.url }}" alt="{{ user.username }}">
-                                {% else %}
-                                    <div class="h-8 w-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
-                                        {{ user.first_name|slice:":1" }}
-                                    </div>
-                                {% endif %}
+                        <div class="relative ml-3 border-l border-slate-200 pl-4">
+                            <button id="user-menu-button" class="flex items-center gap-2 hover:opacity-80 transition-all focus:outline-none" aria-expanded="false" aria-haspopup="true">
+                                <img class="h-8 w-8 rounded-full object-cover ring-2 ring-primary-100" src="{{ user.avatar_url }}" alt="{{ user.username }}">
                                 <span class="text-sm font-semibold text-slate-700">{{ user.first_name }}</span>
-                            </a>
-                            <a href="{% url 'logout' %}" class="text-slate-400 hover:text-rose-600 ml-2 p-1.5 rounded-lg transition-colors" title="Se déconnecter">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                            </a>
+                                <i class="fa-solid fa-chevron-down text-xs text-slate-400 ml-1 transition-transform duration-200" id="user-menu-arrow"></i>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 rounded-xl bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none border border-slate-100 z-50" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                                <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2" role="menuitem" tabindex="-1" id="user-menu-item-0">
+                                    <i class="fa-regular fa-user text-slate-400"></i> Profil
+                                </a>
+                                <hr class="border-slate-100 my-1">
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-rose-600 hover:bg-rose-50/50 transition-colors flex items-center gap-2" role="menuitem" tabindex="-1" id="user-menu-item-1">
+                                    <i class="fa-solid fa-right-from-bracket text-rose-400"></i> Déconnexion
+                                </a>
+                            </div>
                         </div>
                     {% else %}
                         <a href="{% url 'login' %}" class="text-slate-700 hover:text-primary-600 px-3 py-2 rounded-lg text-sm font-semibold transition-all">
@@ -229,6 +232,31 @@
         if (btn && menu) {
             btn.addEventListener('click', () => {
                 menu.classList.toggle('hidden');
+            });
+        }
+
+        // User Dropdown Menu script
+        const userMenuBtn = document.getElementById('user-menu-button');
+        const userDropdown = document.getElementById('user-dropdown-menu');
+        const userMenuArrow = document.getElementById('user-menu-arrow');
+        
+        if (userMenuBtn && userDropdown) {
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+                if (userMenuArrow) {
+                    userMenuArrow.classList.toggle('rotate-180');
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                    if (userMenuArrow) {
+                        userMenuArrow.classList.remove('rotate-180');
+                    }
+                }
             });
         }
     </script>

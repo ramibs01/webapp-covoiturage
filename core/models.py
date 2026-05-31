@@ -35,6 +35,17 @@ class User(AbstractUser):
         verbose_name_plural = "Utilisateurs"
 
     @property
+    def avatar_url(self):
+        if self.photoProfil and hasattr(self.photoProfil, 'url'):
+            try:
+                # If a custom image is uploaded and it's not the default placeholder path
+                if 'default.png' not in self.photoProfil.url:
+                    return self.photoProfil.url
+            except ValueError:
+                pass
+        return '/static/images/default-avatar.png'
+
+    @property
     def noteMoyenne(self):
         # We average the notes left on confirmed reservations for rides driven by this user
         reservations_with_reviews = Reservation.objects.filter(

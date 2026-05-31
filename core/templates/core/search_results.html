@@ -85,13 +85,7 @@
                         <div>
                             <!-- Driver Card -->
                             <div class="flex items-center gap-3 mb-6">
-                                {% if ride.driver.photoProfil %}
-                                    <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.photoProfil.url }}" alt="{{ ride.driver.username }}">
-                                {% else %}
-                                    <div class="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
-                                        {{ ride.driver.first_name|slice:":1" }}
-                                    </div>
-                                {% endif %}
+                                <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.avatar_url }}" alt="{{ ride.driver.username }}">
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-800">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h4>
                                     <div class="flex items-center text-xs text-amber-500 gap-0.5">

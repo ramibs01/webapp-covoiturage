@@ -7,9 +7,7 @@
 <!-- Hero Section -->
 <div class="relative overflow-hidden bg-slate-900 py-24 sm:py-32">
     <!-- Background visual assets -->
-    <div class="absolute inset-0 opacity-30">
-        <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-emerald-500 blur-3xl"></div>
-        <div class="absolute top-20 right-10 w-80 h-80 rounded-full bg-teal-600 blur-3xl"></div>
+    <div class="absolute inset-0 opacity-30 bg-cover bg-center" style="background-image: url('{% static 'images/background_image.jpg' %}');">
     </div>
     
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -148,13 +146,7 @@
                         <!-- Driver Details Header -->
                         <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
                             <div class="flex items-center gap-3">
-                                {% if ride.driver.photoProfil %}
-                                    <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.photoProfil.url }}" alt="{{ ride.driver.username }}">
-                                {% else %}
-                                    <div class="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
-                                        {{ ride.driver.first_name|slice:":1" }}
-                                    </div>
-                                {% endif %}
+                                <img class="h-10 w-10 rounded-full object-cover ring-2 ring-primary-100" src="{{ ride.driver.avatar_url }}" alt="{{ ride.driver.username }}">
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-800">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</h4>
                                     <div class="flex items-center text-xs text-amber-500 gap-0.5">

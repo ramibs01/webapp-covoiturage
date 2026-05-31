@@ -15,13 +15,7 @@
             <div class="flex-grow overflow-y-auto divide-y divide-slate-100">
                 {% for contact in contacts %}
                     <a href="{% url 'inbox' %}?contact={{ contact.id }}" class="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors {% if active_contact.id == contact.id %}bg-slate-50{% endif %}">
-                        {% if contact.photoProfil %}
-                            <img class="h-10 w-10 rounded-full object-cover" src="{{ contact.photoProfil.url }}" alt="{{ contact.username }}">
-                        {% else %}
-                            <div class="h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
-                                {{ contact.first_name|slice:":1" }}
-                            </div>
-                        {% endif %}
+                        <img class="h-10 w-10 rounded-full object-cover" src="{{ contact.avatar_url }}" alt="{{ contact.username }}">
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-bold text-slate-800 truncate">{{ contact.first_name }} {{ contact.last_name }}</h4>
                             <p class="text-xs text-slate-400 truncate">Cliquez pour voir les messages</p>
@@ -42,13 +36,7 @@
                 <div class="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <a href="{% url 'inbox' %}" class="md:hidden text-slate-500 hover:text-slate-700 mr-2"><i class="fa-solid fa-arrow-left"></i></a>
-                        {% if active_contact.photoProfil %}
-                            <img class="h-8 w-8 rounded-full object-cover" src="{{ active_contact.photoProfil.url }}" alt="{{ active_contact.username }}">
-                        {% else %}
-                            <div class="h-8 w-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs">
-                                {{ active_contact.first_name|slice:":1" }}
-                            </div>
-                        {% endif %}
+                        <img class="h-8 w-8 rounded-full object-cover" src="{{ active_contact.avatar_url }}" alt="{{ active_contact.username }}">
                         <div>
                             <h3 class="text-sm font-bold text-slate-800">{{ active_contact.first_name }} {{ active_contact.last_name }}</h3>
                             <span class="text-[10px] text-slate-400">{{ active_contact.telephone }}</span>

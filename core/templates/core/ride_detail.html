@@ -89,9 +89,7 @@
                         <div class="border-b border-slate-100 pb-6 last:border-b-0 last:pb-0">
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-slate-150 text-slate-600 flex items-center justify-center font-bold text-xs">
-                                        {{ review.passenger.first_name|slice:":1" }}
-                                    </div>
+                                    <img class="h-8 w-8 rounded-full object-cover ring-2 ring-slate-100" src="{{ review.passenger.avatar_url }}" alt="{{ review.passenger.username }}">
                                     <div>
                                         <h4 class="text-xs font-bold text-slate-800">{{ review.passenger.first_name }}</h4>
                                         <span class="text-[10px] text-slate-400">{{ review.dateAvis }}</span>
@@ -122,13 +120,7 @@
             <!-- Driver Profile Card -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center">
                 <div class="relative inline-block mx-auto mb-4">
-                    {% if ride.driver.photoProfil %}
-                        <img class="h-24 w-24 rounded-full object-cover ring-4 ring-primary-100" src="{{ ride.driver.photoProfil.url }}" alt="{{ ride.driver.username }}">
-                    {% else %}
-                        <div class="h-24 w-24 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-3xl mx-auto ring-4 ring-primary-50">
-                            {{ ride.driver.first_name|slice:":1" }}
-                        </div>
-                    {% endif %}
+                    <img class="h-24 w-24 rounded-full object-cover ring-4 ring-primary-100" src="{{ ride.driver.avatar_url }}" alt="{{ ride.driver.username }}">
                     <span class="absolute bottom-0 right-1 bg-emerald-500 text-white p-1 rounded-full text-xs shadow-md border-2 border-white" title="Compte Vérifié">
                         <i class="fa-solid fa-user-check"></i>
                     </span>
